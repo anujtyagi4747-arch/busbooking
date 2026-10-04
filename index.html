@@ -3758,7 +3758,715 @@ function saveTicket(){
 }
 
 </script>
+<!-- =========================
+     PART 5A — MY TICKETS
+========================= -->
 
-</html>
+<style>
+/* MY TICKETS SCREEN */
+#ticketsScreen{
+  position:fixed;
+  inset:0;
+  z-index:1200;
+  background:#f5f8f6;
+  overflow-y:auto;
+  display:none;
+  animation:ticketIn .25s ease;
+}
+
+@keyframes ticketIn{
+  from{
+    opacity:0;
+    transform:translateY(15px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.tickets-header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:#0f7a4d;
+  color:#fff;
+  padding:17px 15px 20px;
+  box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+
+.tickets-top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.tickets-back{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:13px;
+  background:rgba(255,255,255,.15);
+  color:#fff;
+  font-size:21px;
+  cursor:pointer;
+}
+
+.tickets-heading{
+  flex:1;
+}
+
+.tickets-heading h2{
+  margin:0;
+  font-size:20px;
+  font-weight:800;
+}
+
+.tickets-heading p{
+  margin:4px 0 0;
+  font-size:11px;
+  opacity:.82;
+}
+
+.tickets-search{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:13px;
+  background:rgba(255,255,255,.15);
+  color:#fff;
+  font-size:18px;
+}
+
+.ticket-tabs{
+  display:flex;
+  gap:8px;
+  padding:15px 15px 6px;
+  overflow-x:auto;
+}
+
+.ticket-tabs::-webkit-scrollbar{
+  display:none;
+}
+
+.ticket-tab{
+  border:1px solid #dbe6e0;
+  background:#fff;
+  color:#68756f;
+  border-radius:30px;
+  padding:9px 16px;
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.ticket-tab.active{
+  background:#0f7a4d;
+  color:#fff;
+  border-color:#0f7a4d;
+}
+
+.ticket-list{
+  padding:10px 15px 100px;
+}
+
+.ticket-history-card{
+  background:#fff;
+  border:1px solid #edf1ef;
+  border-radius:19px;
+  margin-bottom:14px;
+  overflow:hidden;
+  box-shadow:0 5px 20px rgba(20,70,48,.07);
+}
+
+.ticket-card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px;
+}
+
+.ticket-company{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.ticket-company-logo{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:#e7f5ee;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#0f7a4d;
+  font-size:18px;
+}
+
+.ticket-company strong{
+  display:block;
+  color:#17221d;
+  font-size:14px;
+}
+
+.ticket-company span{
+  display:block;
+  margin-top:3px;
+  color:#8b9691;
+  font-size:10px;
+}
+
+.ticket-status{
+  padding:6px 10px;
+  border-radius:20px;
+  background:#e7f7ee;
+  color:#087544;
+  font-size:9px;
+  font-weight:800;
+}
+
+.ticket-route{
+  padding:0 15px 15px;
+}
+
+.ticket-route-line{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.ticket-place{
+  flex:1;
+}
+
+.ticket-place:last-child{
+  text-align:right;
+}
+
+.ticket-place small{
+  display:block;
+  color:#98a39e;
+  font-size:9px;
+  margin-bottom:4px;
+}
+
+.ticket-place strong{
+  color:#18231e;
+  font-size:16px;
+}
+
+.ticket-arrow{
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  background:#f0f7f3;
+  color:#0f7a4d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+}
+
+.ticket-divider{
+  border-top:1px dashed #dce6e1;
+  position:relative;
+  margin:0 15px;
+}
+
+.ticket-divider:before,
+.ticket-divider:after{
+  content:"";
+  position:absolute;
+  top:-7px;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#f5f8f6;
+}
+
+.ticket-divider:before{
+  left:-22px;
+}
+
+.ticket-divider:after{
+  right:-22px;
+}
+
+.ticket-info-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  padding:15px;
+}
+
+.ticket-info-item{
+  background:#f7faf8;
+  border-radius:11px;
+  padding:9px 7px;
+}
+
+.ticket-info-item span{
+  display:block;
+  color:#929d98;
+  font-size:9px;
+  margin-bottom:4px;
+}
+
+.ticket-info-item strong{
+  display:block;
+  color:#25322c;
+  font-size:11px;
+}
+
+.ticket-card-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-top:1px solid #f0f2f1;
+  padding:12px 15px;
+}
+
+.ticket-number{
+  color:#89958f;
+  font-size:10px;
+}
+
+.ticket-number b{
+  color:#27342e;
+}
+
+.view-ticket-btn{
+  border:0;
+  background:#0f7a4d;
+  color:#fff;
+  border-radius:10px;
+  padding:9px 13px;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.empty-tickets{
+  text-align:center;
+  padding:55px 25px;
+  display:none;
+}
+
+.empty-ticket-icon{
+  width:70px;
+  height:70px;
+  border-radius:22px;
+  background:#e8f5ee;
+  color:#0f7a4d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  margin:0 auto 15px;
+}
+
+.empty-tickets h3{
+  margin:0;
+  color:#1b2922;
+  font-size:17px;
+}
+
+.empty-tickets p{
+  margin:7px 0 18px;
+  color:#89958f;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.book-now-btn{
+  border:0;
+  background:#0f7a4d;
+  color:#fff;
+  padding:11px 20px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:700;
+}
+</style>
+
+
+<!-- MY TICKETS SCREEN -->
+<div id="ticketsScreen">
+
+  <div class="tickets-header">
+
+    <div class="tickets-top">
+
+      <button class="tickets-back"
+              onclick="closeTickets()">
+        ←
+      </button>
+
+      <div class="tickets-heading">
+        <h2>My Tickets</h2>
+        <p>Your booking history</p>
+      </div>
+
+      <button class="tickets-search"
+              onclick="showToast('Ticket search coming soon')">
+        ⌕
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- FILTER TABS -->
+  <div class="ticket-tabs">
+
+    <button class="ticket-tab active"
+            onclick="filterTickets('all',this)">
+      All
+    </button>
+
+    <button class="ticket-tab"
+            onclick="filterTickets('upcoming',this)">
+      Upcoming
+    </button>
+
+    <button class="ticket-tab"
+            onclick="filterTickets('completed',this)">
+      Completed
+    </button>
+
+    <button class="ticket-tab"
+            onclick="filterTickets('cancelled',this)">
+      Cancelled
+    </button>
+
+  </div>
+
+
+  <!-- TICKET LIST -->
+  <div class="ticket-list"
+       id="ticketList">
+
+
+    <!-- TICKET 1 -->
+    <div class="ticket-history-card"
+         data-status="upcoming">
+
+      <div class="ticket-card-top">
+
+        <div class="ticket-company">
+
+          <div class="ticket-company-logo">
+            🚌
+          </div>
+
+          <div>
+            <strong>Royal Express</strong>
+            <span>AC Sleeper Premium</span>
+          </div>
+
+        </div>
+
+        <div class="ticket-status">
+          CONFIRMED
+        </div>
+
+      </div>
+
+
+      <div class="ticket-route">
+
+        <div class="ticket-route-line">
+
+          <div class="ticket-place">
+            <small>FROM</small>
+            <strong>Delhi</strong>
+          </div>
+
+          <div class="ticket-arrow">
+            →
+          </div>
+
+          <div class="ticket-place">
+            <small>TO</small>
+            <strong>Dehradun</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="ticket-divider"></div>
+
+
+      <div class="ticket-info-grid">
+
+        <div class="ticket-info-item">
+          <span>DATE</span>
+          <strong>05 Oct 2026</strong>
+        </div>
+
+        <div class="ticket-info-item">
+          <span>SEATS</span>
+          <strong>A1, A2</strong>
+        </div>
+
+        <div class="ticket-info-item">
+          <span>AMOUNT</span>
+          <strong>₹1,198</strong>
+        </div>
+
+      </div>
+
+
+      <div class="ticket-card-bottom">
+
+        <div class="ticket-number">
+          Ticket:
+          <b>RTX-483921</b>
+        </div>
+
+        <button class="view-ticket-btn"
+                onclick="openTicketFromHistory(
+                  'Royal Express',
+                  'Delhi',
+                  'Dehradun',
+                  '05 Oct 2026',
+                  'A1, A2',
+                  '₹1,198',
+                  'RTX-483921'
+                )">
+          View Ticket
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- TICKET 2 -->
+    <div class="ticket-history-card"
+         data-status="completed">
+
+      <div class="ticket-card-top">
+
+        <div class="ticket-company">
+
+          <div class="ticket-company-logo">
+            🚌
+          </div>
+
+          <div>
+            <strong>CityLine Travels</strong>
+            <span>AC Seater Volvo</span>
+          </div>
+
+        </div>
+
+        <div class="ticket-status">
+          COMPLETED
+        </div>
+
+      </div>
+
+
+      <div class="ticket-route">
+
+        <div class="ticket-route-line">
+
+          <div class="ticket-place">
+            <small>FROM</small>
+            <strong>Meerut</strong>
+          </div>
+
+          <div class="ticket-arrow">
+            →
+          </div>
+
+          <div class="ticket-place">
+            <small>TO</small>
+            <strong>Delhi</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="ticket-divider"></div>
+
+
+      <div class="ticket-info-grid">
+
+        <div class="ticket-info-item">
+          <span>DATE</span>
+          <strong>28 Sep 2026</strong>
+        </div>
+
+        <div class="ticket-info-item">
+          <span>SEATS</span>
+          <strong>B1</strong>
+        </div>
+
+        <div class="ticket-info-item">
+          <span>AMOUNT</span>
+          <strong>₹749</strong>
+        </div>
+
+      </div>
+
+
+      <div class="ticket-card-bottom">
+
+        <div class="ticket-number">
+          Ticket:
+          <b>RTX-274615</b>
+        </div>
+
+        <button class="view-ticket-btn"
+                onclick="openTicketFromHistory(
+                  'CityLine Travels',
+                  'Meerut',
+                  'Delhi',
+                  '28 Sep 2026',
+                  'B1',
+                  '₹749',
+                  'RTX-274615'
+                )">
+          View Ticket
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- TICKET 3 -->
+    <div class="ticket-history-card"
+         data-status="cancelled">
+
+      <div class="ticket-card-top">
+
+        <div class="ticket-company">
+
+          <div class="ticket-company-logo">
+            🚌
+          </div>
+
+          <div>
+            <strong>Highway Star</strong>
+            <span>Non AC Seater</span>
+          </div>
+
+        </div>
+
+        <div class="ticket-status cancelled">
+          CANCELLED
+        </div>
+
+      </div>
+
+
+      <div class="ticket-route">
+
+        <div class="ticket-route-line">
+
+          <div class="ticket-place">
+            <small>FROM</small>
+            <strong>Ghaziabad</strong>
+          </div>
+
+          <div class="ticket-arrow">
+            →
+          </div>
+
+          <div class="ticket-place">
+            <small>TO</small>
+            <strong>Haridwar</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="ticket-divider"></div>
+
+
+      <div class="ticket-info-grid">
+
+        <div class="ticket-info-item">
+          <span>DATE</span>
+          <strong>20 Sep 2026</strong>
+        </div>
+
+        <div class="ticket-info-item">
+          <span>SEATS</span>
+          <strong>C3</strong>
+        </div>
+
+        <div class="ticket-info-item">
+          <span>AMOUNT</span>
+          <strong>₹399</strong>
+        </div>
+
+      </div>
+
+
+      <div class="ticket-card-bottom">
+
+        <div class="ticket-number">
+          Ticket:
+          <b>RTX-196304</b>
+        </div>
+
+        <button class="view-ticket-btn"
+                onclick="openTicketFromHistory(
+                  'Highway Star',
+                  'Ghaziabad',
+                  'Haridwar',
+                  '20 Sep 2026',
+                  'C3',
+                  '₹399',
+                  'RTX-196304'
+                )">
+          View Ticket
+        </button>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+  <!-- EMPTY STATE -->
+
+  <div class="empty-tickets"
+       id="emptyTickets">
+
+    <div class="empty-ticket-icon">
+      🎫
+    </div>
+
+    <h3>No tickets found</h3>
+
+    <p>
+      You don't have any bookings in this category yet.
+    </p>
+
+    <button class="book-now-btn"
+            onclick="closeTickets()">
+      Book a Bus
+    </button>
+
+  </div>
+
+</div>
+
 </body>
               </html>
