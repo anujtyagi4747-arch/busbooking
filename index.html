@@ -2778,5 +2778,275 @@ function continueBooking(){
       </div>
 
     </div>
+          <!-- =================================
+         FARE SUMMARY
+    ================================= -->
+
+    <div class="price-breakup">
+
+      <div class="section-title">
+        Fare Summary
+      </div>
+
+      <div class="price-row">
+        <span>Seat Fare</span>
+        <span>₹<b id="fareAmount">0</b></span>
+      </div>
+
+      <div class="price-row">
+        <span>Service Fee</span>
+        <span>₹0</span>
+      </div>
+
+      <div class="price-row">
+        <span>Tax</span>
+        <span>₹0</span>
+      </div>
+
+      <div class="price-row total">
+        <span>Total Amount</span>
+        <strong>
+          ₹<span id="bookingTotal">0</span>
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================
+       CONFIRM BUTTON
+  ================================= -->
+
+  <div class="passenger-bottom">
+
+    <button
+      class="confirm-booking-btn"
+      onclick="confirmBooking()">
+
+      Confirm Booking & Generate Ticket
+
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =================================
+   PART 3B - BOOKING LOGIC
+================================= */
+
+let selectedPaymentMethod = 'UPI';
+
+
+/* =================================
+   OPEN PASSENGER SCREEN
+================================= */
+
+function continueBooking(){
+
+  if(
+    typeof selectedSeats === 'undefined' ||
+    selectedSeats.length === 0
+  ){
+
+    showToast('Please select at least one seat');
+
+    return;
+  }
+
+
+  let fromValue =
+    document.getElementById('fromInput')?.value
+    || 'Delhi';
+
+
+  let toValue =
+    document.getElementById('toInput')?.value
+    || 'Jaipur';
+
+
+  let dateValue =
+    document.getElementById('journeyDate')?.value
+    || 'Today';
+
+
+  document.getElementById('bookingFrom').innerText =
+    fromValue;
+
+
+  document.getElementById('bookingTo').innerText =
+    toValue;
+
+
+  document.getElementById('bookingBus').innerText =
+    document.getElementById('selectedBusName').innerText;
+
+
+  document.getElementById('bookingSeats').innerText =
+    selectedSeats.join(', ');
+
+
+  document.getElementById('bookingDate').innerText =
+    dateValue;
+
+
+  let total =
+    selectedSeats.length * currentSeatPrice;
+
+
+  document.getElementById('fareAmount').innerText =
+    total.toLocaleString('en-IN');
+
+
+  document.getElementById('bookingTotal').innerText =
+    total.toLocaleString('en-IN');
+
+
+  document.getElementById('passengerCount').value =
+    selectedSeats.length;
+
+
+  document.getElementById('passengerScreen').style.display =
+    'flex';
+
+}
+
+
+/* =================================
+   CLOSE PASSENGER SCREEN
+================================= */
+
+function closePassenger(){
+
+  document.getElementById('passengerScreen').style.display =
+    'none';
+
+}
+
+
+/* =================================
+   PAYMENT SELECT
+================================= */
+
+function selectPayment(element, method){
+
+  document
+    .querySelectorAll('.payment-option')
+    .forEach(function(option){
+
+      option.classList.remove('active');
+
+    });
+
+
+  element.classList.add('active');
+
+  selectedPaymentMethod = method;
+
+}
+
+
+/* =================================
+   CONFIRM BOOKING
+================================= */
+
+function confirmBooking(){
+
+  let name =
+    document.getElementById('passengerName')
+      .value
+      .trim();
+
+
+  let mobile =
+    document.getElementById('passengerMobile')
+      .value
+      .trim();
+
+
+  let count =
+    Number(
+      document.getElementById('passengerCount')
+        .value
+    );
+
+
+  /* NAME VALIDATION */
+
+  if(name === ''){
+
+    showToast('Please enter passenger name');
+
+    document
+      .getElementById('passengerName')
+      .focus();
+
+    return;
+
+  }
+
+
+  /* MOBILE VALIDATION */
+
+  if(!/^[0-9]{10}$/.test(mobile)){
+
+    showToast('Please enter valid 10 digit mobile');
+
+    document
+      .getElementById('passengerMobile')
+      .focus();
+
+    return;
+
+  }
+
+
+  /* PASSENGER COUNT */
+
+  if(
+    count < 1 ||
+    count > selectedSeats.length
+  ){
+
+    showToast(
+      'Passenger count cannot exceed selected seats'
+    );
+
+    return;
+
+  }
+
+
+  /* BOOKING SUCCESS */
+
+  showToast(
+    'Booking confirmed successfully ✓'
+  );
+
+
+  setTimeout(function(){
+
+    document
+      .getElementById('passengerScreen')
+      .style.display = 'none';
+
+
+    document
+      .getElementById('seatScreen')
+      .style.display = 'none';
+
+
+    /* NEXT PART WILL OPEN DIGITAL TICKET */
+
+  },800);
+
+}
+
+</script>
 </body>
               </html>
