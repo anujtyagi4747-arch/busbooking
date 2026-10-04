@@ -748,6 +748,983 @@ function showToast(message){
 }
 
 </script>
+<!-- =========================
+     PART 2A
+     BUS SEARCH RESULTS
+========================= -->
 
+<style>
+
+.search-results{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:80;
+    background:#f5f7f6;
+    overflow-y:auto;
+    max-width:480px;
+    margin:auto;
+}
+
+.results-header{
+    background:linear-gradient(135deg,#07523f,#0b765b);
+    color:white;
+    padding:20px 18px 22px;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.results-top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.back-btn{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    background:rgba(255,255,255,.14);
+    color:white;
+    font-size:20px;
+}
+
+.results-title{
+    flex:1;
+}
+
+.results-title h2{
+    font-size:18px;
+}
+
+.results-title p{
+    font-size:10px;
+    opacity:.7;
+    margin-top:3px;
+}
+
+.filter-btn{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    background:white;
+    color:#07523f;
+}
+
+.route-summary{
+    margin-top:18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.route-city{
+    text-align:center;
+}
+
+.route-city strong{
+    display:block;
+    font-size:15px;
+}
+
+.route-city small{
+    opacity:.65;
+    font-size:9px;
+}
+
+.route-line{
+    flex:1;
+    height:1px;
+    background:rgba(255,255,255,.25);
+    margin:0 12px;
+    position:relative;
+}
+
+.route-line:after{
+    content:"🚌";
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:#07523f;
+    padding:4px;
+    font-size:12px;
+}
+
+.results-content{
+    padding:16px;
+    padding-bottom:100px;
+}
+
+.results-info{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:13px;
+}
+
+.results-info h3{
+    font-size:15px;
+}
+
+.results-info span{
+    font-size:10px;
+    color:#74817c;
+}
+
+
+/* BUS CARD */
+
+.bus-card{
+    background:white;
+    border:1px solid #e3ebe7;
+    border-radius:20px;
+    margin-bottom:13px;
+    overflow:hidden;
+    box-shadow:0 7px 20px rgba(20,50,40,.06);
+}
+
+.bus-main{
+    padding:16px;
+}
+
+.bus-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+}
+
+.bus-company{
+    display:flex;
+    gap:11px;
+    align-items:center;
+}
+
+.bus-logo{
+    width:43px;
+    height:43px;
+    border-radius:14px;
+    background:#e9f5f0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:21px;
+}
+
+.bus-name h4{
+    font-size:14px;
+}
+
+.bus-name p{
+    font-size:9px;
+    color:#84908b;
+    margin-top:4px;
+}
+
+.bus-price{
+    text-align:right;
+}
+
+.bus-price strong{
+    display:block;
+    color:#0b6b52;
+    font-size:16px;
+}
+
+.bus-price small{
+    font-size:9px;
+    color:#89958f;
+}
+
+.bus-timing{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+}
+
+.time-block:first-child{
+    text-align:left;
+}
+
+.time-block:last-child{
+    text-align:right;
+}
+
+.time-block strong{
+    display:block;
+    font-size:17px;
+}
+
+.time-block small{
+    color:#89958f;
+    font-size:9px;
+}
+
+.duration{
+    text-align:center;
+    padding:0 10px;
+}
+
+.duration span{
+    display:block;
+    font-size:9px;
+    color:#89958f;
+    margin-bottom:5px;
+}
+
+.duration-line{
+    width:70px;
+    height:1px;
+    background:#dce5e0;
+    position:relative;
+}
+
+.duration-line:after{
+    content:"";
+    position:absolute;
+    right:0;
+    top:-3px;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#0b6b52;
+}
+
+.bus-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:16px;
+}
+
+.meta-tag{
+    padding:6px 9px;
+    border-radius:8px;
+    background:#f2f6f4;
+    color:#63716b;
+    font-size:9px;
+}
+
+.bus-bottom{
+    border-top:1px solid #edf1ef;
+    padding:11px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.seats-left{
+    color:#e08722;
+    font-size:10px;
+    font-weight:700;
+}
+
+.select-bus{
+    background:#0b6b52;
+    color:white;
+    border-radius:10px;
+    padding:9px 15px;
+    font-size:10px;
+    font-weight:800;
+}
+
+</style>
+
+
+<!-- SEARCH RESULTS -->
+
+<div class="search-results" id="searchResults">
+
+    <div class="results-header">
+
+        <div class="results-top">
+
+            <button class="back-btn"
+                onclick="closeResults()">
+                ‹
+            </button>
+
+            <div class="results-title">
+
+                <h2>Available Buses</h2>
+
+                <p id="resultDate">
+                    Today • 1 Passenger
+                </p>
+
+            </div>
+
+            <button class="filter-btn"
+                onclick="showToast('Filters coming next')">
+                ☷
+            </button>
+
+        </div>
+
+
+        <div class="route-summary">
+
+            <div class="route-city">
+
+                <strong id="resultFrom">
+                    Delhi
+                </strong>
+
+                <small>FROM</small>
+
+            </div>
+
+
+            <div class="route-line"></div>
+
+
+            <div class="route-city">
+
+                <strong id="resultTo">
+                    Jaipur
+                </strong>
+
+                <small>TO</small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="results-content">
+
+        <div class="results-info">
+
+            <h3>6 buses found</h3>
+
+            <span>
+                Sorted by departure
+            </span>
+
+        </div>
+
+
+        <!-- BUS 1 -->
+
+        <div class="bus-card">
+
+            <div class="bus-main">
+
+                <div class="bus-top">
+
+                    <div class="bus-company">
+
+                        <div class="bus-logo">
+                            🚌
+                        </div>
+
+                        <div class="bus-name">
+
+                            <h4>
+                                Royal Express
+                            </h4>
+
+                            <p>
+                                AC Sleeper • Premium
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bus-price">
+
+                        <strong>
+                            ₹599
+                        </strong>
+
+                        <small>
+                            per seat
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bus-timing">
+
+                    <div class="time-block">
+
+                        <strong>
+                            06:30 AM
+                        </strong>
+
+                        <small>
+                            Delhi
+                        </small>
+
+                    </div>
+
+
+                    <div class="duration">
+
+                        <span>
+                            4h 30m
+                        </span>
+
+                        <div class="duration-line"></div>
+
+                    </div>
+
+
+                    <div class="time-block">
+
+                        <strong>
+                            11:00 AM
+                        </strong>
+
+                        <small>
+                            Jaipur
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bus-meta">
+
+                    <span class="meta-tag">
+                        ❄ AC
+                    </span>
+
+                    <span class="meta-tag">
+                        WiFi
+                    </span>
+
+                    <span class="meta-tag">
+                        Charging
+                    </span>
+
+                    <span class="meta-tag">
+                        Water Bottle
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="bus-bottom">
+
+                <span class="seats-left">
+                    ● 8 seats left
+                </span>
+
+                <button class="select-bus"
+                    onclick="openSeats(
+                        'Royal Express',
+                        '06:30 AM',
+                        '11:00 AM',
+                        '599'
+                    )">
+
+                    Select Seat →
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUS 2 -->
+
+        <div class="bus-card">
+
+            <div class="bus-main">
+
+                <div class="bus-top">
+
+                    <div class="bus-company">
+
+                        <div class="bus-logo">
+                            🚍
+                        </div>
+
+                        <div class="bus-name">
+
+                            <h4>
+                                CityLine Travels
+                            </h4>
+
+                            <p>
+                                AC Seater • Volvo
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bus-price">
+
+                        <strong>
+                            ₹749
+                        </strong>
+
+                        <small>
+                            per seat
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bus-timing">
+
+                    <div class="time-block">
+
+                        <strong>
+                            08:15 AM
+                        </strong>
+
+                        <small>
+                            Delhi
+                        </small>
+
+                    </div>
+
+
+                    <div class="duration">
+
+                        <span>
+                            4h 15m
+                        </span>
+
+                        <div class="duration-line"></div>
+
+                    </div>
+
+
+                    <div class="time-block">
+
+                        <strong>
+                            12:30 PM
+                        </strong>
+
+                        <small>
+                            Jaipur
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bus-meta">
+
+                    <span class="meta-tag">
+                        ❄ AC
+                    </span>
+
+                    <span class="meta-tag">
+                        Charging
+                    </span>
+
+                    <span class="meta-tag">
+                        Extra Legroom
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="bus-bottom">
+
+                <span class="seats-left">
+                    ● 14 seats left
+                </span>
+
+                <button class="select-bus"
+                    onclick="openSeats(
+                        'CityLine Travels',
+                        '08:15 AM',
+                        '12:30 PM',
+                        '749'
+                    )">
+
+                    Select Seat →
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUS 3 -->
+
+        <div class="bus-card">
+
+            <div class="bus-main">
+
+                <div class="bus-top">
+
+                    <div class="bus-company">
+
+                        <div class="bus-logo">
+                            🚌
+                        </div>
+
+                        <div class="bus-name">
+
+                            <h4>
+                                Highway Star
+                            </h4>
+
+                            <p>
+                                Non AC • Seater
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bus-price">
+
+                        <strong>
+                            ₹399
+                        </strong>
+
+                        <small>
+                            per seat
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bus-timing">
+
+                    <div class="time-block">
+
+                        <strong>
+                            10:00 AM
+                        </strong>
+
+                        <small>
+                            Delhi
+                        </small>
+
+                    </div>
+
+
+                    <div class="duration">
+
+                        <span>
+                            5h 10m
+                        </span>
+
+                        <div class="duration-line"></div>
+
+                    </div>
+
+
+                    <div class="time-block">
+
+                        <strong>
+                            03:10 PM
+                        </strong>
+
+                        <small>
+                            Jaipur
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bus-meta">
+
+                    <span class="meta-tag">
+                        USB Charging
+                    </span>
+
+                    <span class="meta-tag">
+                        Water
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="bus-bottom">
+
+                <span class="seats-left">
+                    ● 21 seats left
+                </span>
+
+                <button class="select-bus"
+                    onclick="openSeats(
+                        'Highway Star',
+                        '10:00 AM',
+                        '03:10 PM',
+                        '399'
+                    )">
+
+                    Select Seat →
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUS 4 -->
+
+        <div class="bus-card">
+
+            <div class="bus-main">
+
+                <div class="bus-top">
+
+                    <div class="bus-company">
+
+                        <div class="bus-logo">
+                            🚍
+                        </div>
+
+                        <div class="bus-name">
+
+                            <h4>
+                                Rajputana Bus
+                            </h4>
+
+                            <p>
+                                AC Sleeper • 2+1
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bus-price">
+
+                        <strong>
+                            ₹899
+                        </strong>
+
+                        <small>
+                            per seat
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bus-timing">
+
+                    <div class="time-block">
+
+                        <strong>
+                            09:30 PM
+                        </strong>
+
+                        <small>
+                            Delhi
+                        </small>
+
+                    </div>
+
+
+                    <div class="duration">
+
+                        <span>
+                            5h 00m
+                        </span>
+
+                        <div class="duration-line"></div>
+
+                    </div>
+
+
+                    <div class="time-block">
+
+                        <strong>
+                            02:30 AM
+                        </strong>
+
+                        <small>
+                            Jaipur
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bus-meta">
+
+                    <span class="meta-tag">
+                        ❄ AC
+                    </span>
+
+                    <span class="meta-tag">
+                        Sleeper
+                    </span>
+
+                    <span class="meta-tag">
+                        Blanket
+                    </span>
+
+                    <span class="meta-tag">
+                        Charging
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="bus-bottom">
+
+                <span class="seats-left">
+                    ● 5 seats left
+                </span>
+
+                <button class="select-bus"
+                    onclick="openSeats(
+                        'Rajputana Bus',
+                        '09:30 PM',
+                        '02:30 AM',
+                        '899'
+                    )">
+
+                    Select Seat →
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SEARCH RESULT FUNCTIONS
+========================= */
+
+function searchBuses(){
+
+    const from =
+        document.getElementById(
+            "fromCity"
+        ).value.trim();
+
+    const to =
+        document.getElementById(
+            "toCity"
+        ).value.trim();
+
+    const date =
+        document.getElementById(
+            "journeyDate"
+        ).value;
+
+    const passengers =
+        document.getElementById(
+            "passengers"
+        ).value;
+
+
+    if(!from || !to){
+
+        showToast(
+            "Please enter From and To locations"
+        );
+
+        return;
+    }
+
+
+    if(!date){
+
+        showToast(
+            "Please select journey date"
+        );
+
+        return;
+    }
+
+
+    document.getElementById(
+        "resultFrom"
+    ).innerText = from;
+
+
+    document.getElementById(
+        "resultTo"
+    ).innerText = to;
+
+
+    document.getElementById(
+        "resultDate"
+    ).innerText =
+        `${formatDate(date)} • ${passengers} Passenger`;
+
+
+    document.getElementById(
+        "searchResults"
+    ).style.display = "block";
+
+}
+
+
+/* DATE FORMAT */
+
+function formatDate(date){
+
+    const d =
+        new Date(date);
+
+    return d.toLocaleDateString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+        }
+    );
+
+}
+
+
+/* CLOSE RESULT */
+
+function closeResults(){
+
+    document.getElementById(
+        "searchResults"
+    ).style.display = "none";
+
+}
+
+</script>
 </body>
               </html>
