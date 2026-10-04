@@ -3048,5 +3048,408 @@ function confirmBooking(){
 }
 
 </script>
+    <style>
+.ticket-screen{
+  position:fixed;
+  inset:0;
+  z-index:1100;
+  background:#f4f7f4;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.ticket-header{
+  background:linear-gradient(135deg,#0b6843,#15915d);
+  color:#fff;
+  padding:17px 16px 21px;
+  border-radius:0 0 25px 25px;
+}
+
+.ticket-head-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.ticket-back{
+  width:42px;
+  height:42px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  border-radius:14px;
+  font-size:21px;
+}
+
+.ticket-head-text{
+  flex:1;
+}
+
+.ticket-head-text strong{
+  display:block;
+  font-size:17px;
+}
+
+.ticket-head-text span{
+  display:block;
+  margin-top:3px;
+  font-size:11px;
+  opacity:.8;
+}
+
+.ticket-content{
+  flex:1;
+  overflow-y:auto;
+  padding:20px 16px 110px;
+}
+
+.ticket-success{
+  text-align:center;
+  margin-bottom:18px;
+}
+
+.success-circle{
+  width:58px;
+  height:58px;
+  margin:auto;
+  border-radius:50%;
+  background:#dff5e9;
+  color:#15915d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:27px;
+  font-weight:900;
+}
+
+.ticket-success h2{
+  margin:10px 0 4px;
+  color:#17231d;
+  font-size:20px;
+}
+
+.ticket-success p{
+  margin:0;
+  color:#78847d;
+  font-size:11px;
+}
+
+.digital-ticket{
+  background:#fff;
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid #e0e8e2;
+  box-shadow:0 14px 38px rgba(20,70,45,.09);
+}
+
+.ticket-brand{
+  padding:17px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#f8fbf9;
+}
+
+.ticket-brand-name{
+  font-size:18px;
+  font-weight:900;
+  color:#126b46;
+}
+
+.ticket-brand small{
+  display:block;
+  color:#89948e;
+  font-size:9px;
+  margin-top:2px;
+}
+
+.ticket-status{
+  background:#e5f7ed;
+  color:#148454;
+  border-radius:20px;
+  padding:7px 10px;
+  font-size:9px;
+  font-weight:800;
+}
+
+.ticket-route{
+  padding:19px 17px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.ticket-place{
+  flex:1;
+}
+
+.ticket-place small{
+  display:block;
+  color:#89958e;
+  font-size:9px;
+  margin-bottom:4px;
+}
+
+.ticket-place strong{
+  display:block;
+  color:#17231d;
+  font-size:15px;
+  word-break:break-word;
+}
+
+.ticket-arrow{
+  width:34px;
+  height:34px;
+  flex-shrink:0;
+  border-radius:50%;
+  background:#edf7f1;
+  color:#15915d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
+
+.ticket-divider{
+  position:relative;
+  border-top:1px dashed #d9e2dc;
+  margin:0 17px;
+}
+
+.ticket-details{
+  padding:17px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px 12px;
+}
+
+.ticket-detail small{
+  display:block;
+  color:#8a958f;
+  font-size:9px;
+  margin-bottom:4px;
+}
+
+.ticket-detail strong{
+  display:block;
+  color:#25342c;
+  font-size:12px;
+  word-break:break-word;
+}
+
+.ticket-number{
+  margin:0 17px 17px;
+  padding:13px;
+  border-radius:12px;
+  background:#f5f8f6;
+  text-align:center;
+}
+
+.ticket-number small{
+  display:block;
+  color:#89948e;
+  font-size:9px;
+  margin-bottom:5px;
+}
+
+.ticket-number strong{
+  color:#15915d;
+  font-size:16px;
+  letter-spacing:1px;
+}
+</style>
+
+
+<!-- DIGITAL TICKET -->
+
+<div class="ticket-screen" id="ticketScreen">
+
+  <div class="ticket-header">
+
+    <div class="ticket-head-row">
+
+      <button
+        class="ticket-back"
+        onclick="closeTicket()">
+        ←
+      </button>
+
+      <div class="ticket-head-text">
+
+        <strong>My Digital Ticket</strong>
+
+        <span>
+          Your booking is confirmed
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="ticket-content">
+
+    <div class="ticket-success">
+
+      <div class="success-circle">
+        ✓
+      </div>
+
+      <h2>
+        Booking Confirmed
+      </h2>
+
+      <p>
+        Your bus ticket has been generated successfully.
+      </p>
+
+    </div>
+
+
+    <div class="digital-ticket">
+
+      <div class="ticket-brand">
+
+        <div>
+
+          <div class="ticket-brand-name">
+            RouteX
+          </div>
+
+          <small>
+            SMART BUS BOOKING
+          </small>
+
+        </div>
+
+        <div class="ticket-status">
+          CONFIRMED
+        </div>
+
+      </div>
+
+
+      <div class="ticket-route">
+
+        <div class="ticket-place">
+
+          <small>FROM</small>
+
+          <strong id="ticketFrom">
+            Delhi
+          </strong>
+
+        </div>
+
+
+        <div class="ticket-arrow">
+          →
+        </div>
+
+
+        <div class="ticket-place">
+
+          <small>TO</small>
+
+          <strong id="ticketTo">
+            Jaipur
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="ticket-divider"></div>
+
+
+      <div class="ticket-details">
+
+        <div class="ticket-detail">
+
+          <small>PASSENGER</small>
+
+          <strong id="ticketPassenger">
+            Passenger
+          </strong>
+
+        </div>
+
+
+        <div class="ticket-detail">
+
+          <small>MOBILE</small>
+
+          <strong id="ticketMobile">
+            0000000000
+          </strong>
+
+        </div>
+
+
+        <div class="ticket-detail">
+
+          <small>BUS</small>
+
+          <strong id="ticketBus">
+            Royal Express
+          </strong>
+
+        </div>
+
+
+        <div class="ticket-detail">
+
+          <small>SEATS</small>
+
+          <strong id="ticketSeats">
+            A1
+          </strong>
+
+        </div>
+
+
+        <div class="ticket-detail">
+
+          <small>JOURNEY DATE</small>
+
+          <strong id="ticketJourneyDate">
+            Today
+          </strong>
+
+        </div>
+
+
+        <div class="ticket-detail">
+
+          <small>PAYMENT</small>
+
+          <strong id="ticketPayment">
+            UPI
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="ticket-number">
+
+        <small>
+          TICKET NUMBER
+        </small>
+
+        <strong id="ticketNumber">
+          RTX-000000
+        </strong>
+
+      </div>
+
+    </div>
+
+  </div>
 </body>
               </html>
