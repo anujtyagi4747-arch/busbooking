@@ -4467,6 +4467,570 @@ function saveTicket(){
   </div>
 
 </div>
+<!-- =========================
+     PART 5B — MY TICKETS JS
+========================= -->
+
+<script>
+
+/* =================================
+   OPEN MY TICKETS
+================================= */
+
+function openTickets(){
+
+  const screen = document.getElementById("ticketsScreen");
+
+  if(!screen) return;
+
+  screen.style.display = "block";
+
+  document.body.style.overflow = "hidden";
+
+  filterTickets("all");
+
+}
+
+
+/* =================================
+   CLOSE MY TICKETS
+================================= */
+
+function closeTickets(){
+
+  const screen = document.getElementById("ticketsScreen");
+
+  if(!screen) return;
+
+  screen.style.display = "none";
+
+  document.body.style.overflow = "";
+
+}
+
+
+/* =================================
+   TICKET FILTER
+================================= */
+
+function filterTickets(type,button){
+
+  const cards = document.querySelectorAll(
+    ".ticket-history-card"
+  );
+
+  const empty = document.getElementById(
+    "emptyTickets"
+  );
+
+  let visible = 0;
+
+  cards.forEach(card => {
+
+    const status = card.getAttribute(
+      "data-status"
+    );
+
+    if(
+      type === "all" ||
+      status === type
+    ){
+
+      card.style.display = "block";
+
+      visible++;
+
+    }else{
+
+      card.style.display = "none";
+
+    }
+
+  });
+
+
+  /* UPDATE ACTIVE TAB */
+
+  document.querySelectorAll(
+    ".ticket-tab"
+  ).forEach(tab => {
+
+    tab.classList.remove("active");
+
+  });
+
+
+  if(button){
+
+    button.classList.add("active");
+
+  }
+
+
+  /* EMPTY STATE */
+
+  if(empty){
+
+    empty.style.display =
+      visible === 0 ? "block" : "none";
+
+  }
+
+}
+
+
+/* =================================
+   VIEW OLD TICKET
+================================= */
+
+function openTicketFromHistory(
+  bus,
+  from,
+  to,
+  date,
+  seats,
+  amount,
+  ticketNo
+){
+
+  const ticketScreen =
+    document.getElementById(
+      "ticketScreen"
+    );
+
+  if(!ticketScreen){
+
+    showToast("Ticket screen unavailable");
+
+    return;
+
+  }
+
+
+  /* FILL EXISTING DIGITAL TICKET */
+
+  const fields = {
+
+    ticketFrom: from,
+
+    ticketTo: to,
+
+    ticketPassenger:
+      "Previous Customer",
+
+    ticketMobile:
+      "Saved Customer",
+
+    ticketBus: bus,
+
+    ticketSeats: seats,
+
+    ticketJourneyDate: date,
+
+    ticketPayment: "Paid",
+
+    ticketNumber: ticketNo
+
+  };
+
+
+  Object.keys(fields).forEach(id => {
+
+    const el =
+      document.getElementById(id);
+
+    if(el){
+
+      el.textContent =
+        fields[id];
+
+    }
+
+  });
+
+
+  /* UPDATE TOTAL */
+
+  const total =
+    document.getElementById(
+      "bookingTotal"
+    );
+
+  if(total){
+
+    total.textContent = amount;
+
+  }
+
+
+  closeTickets();
+
+  ticketScreen.style.display =
+    "block";
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+
+/* =================================
+   ADD NEW BOOKING TO HISTORY
+================================= */
+
+function addBookingToHistory(){
+
+  const list =
+    document.getElementById(
+      "ticketList"
+    );
+
+  if(!list) return;
+
+
+  const from =
+    document.getElementById(
+      "bookingFrom"
+    )?.textContent || "Delhi";
+
+
+  const to =
+    document.getElementById(
+      "bookingTo"
+    )?.textContent || "Dehradun";
+
+
+  const bus =
+    document.getElementById(
+      "bookingBus"
+    )?.textContent || "Royal Express";
+
+
+  const seats =
+    document.getElementById(
+      "bookingSeats"
+    )?.textContent ||
+    selectedSeats.join(", ");
+
+
+  const date =
+    document.getElementById(
+      "bookingDate"
+    )?.textContent || "Today";
+
+
+  const total =
+    document.getElementById(
+      "bookingTotal"
+    )?.textContent ||
+    "₹0";
+
+
+  const ticketNumber =
+    document.getElementById(
+      "ticketNumber"
+    )?.textContent ||
+    generateTicketNumber();
+
+
+  const card =
+    document.createElement("div");
+
+
+  card.className =
+    "ticket-history-card";
+
+
+  card.setAttribute(
+    "data-status",
+    "upcoming"
+  );
+
+
+  card.innerHTML = `
+
+    <div class="ticket-card-top">
+
+      <div class="ticket-company">
+
+        <div class="ticket-company-logo">
+          🚌
+        </div>
+
+        <div>
+
+          <strong>${bus}</strong>
+
+          <span>
+            Confirmed Bus Booking
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="ticket-status">
+        CONFIRMED
+      </div>
+
+    </div>
+
+
+    <div class="ticket-route">
+
+      <div class="ticket-route-line">
+
+        <div class="ticket-place">
+
+          <small>FROM</small>
+
+          <strong>
+            ${from}
+          </strong>
+
+        </div>
+
+
+        <div class="ticket-arrow">
+          →
+        </div>
+
+
+        <div class="ticket-place">
+
+          <small>TO</small>
+
+          <strong>
+            ${to}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="ticket-divider"></div>
+
+
+    <div class="ticket-info-grid">
+
+      <div class="ticket-info-item">
+
+        <span>DATE</span>
+
+        <strong>
+          ${date}
+        </strong>
+
+      </div>
+
+
+      <div class="ticket-info-item">
+
+        <span>SEATS</span>
+
+        <strong>
+          ${seats}
+        </strong>
+
+      </div>
+
+
+      <div class="ticket-info-item">
+
+        <span>AMOUNT</span>
+
+        <strong>
+          ${total}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="ticket-card-bottom">
+
+      <div class="ticket-number">
+
+        Ticket:
+        <b>
+          ${ticketNumber}
+        </b>
+
+      </div>
+
+
+      <button
+        class="view-ticket-btn"
+        onclick="openTicketFromHistory(
+          '${bus}',
+          '${from}',
+          '${to}',
+          '${date}',
+          '${seats}',
+          '${total}',
+          '${ticketNumber}'
+        )">
+
+        View Ticket
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  /*
+    NEWEST BOOKING TOP PAR
+    INSERT KI JAYEGI
+  */
+
+  list.prepend(card);
+
+}
+
+
+/* =================================
+   CONNECT CONFIRM BOOKING
+================================= */
+
+const previousConfirmBooking =
+  window.confirmBooking;
+
+
+window.confirmBooking =
+  function(){
+
+    /*
+      ORIGINAL CONFIRM BOOKING
+      FUNCTION KO RUN KARO
+    */
+
+    if(
+      typeof previousConfirmBooking ===
+      "function"
+    ){
+
+      previousConfirmBooking();
+
+    }
+
+
+    /*
+      THODA DELAY ISLIYE KI
+      TICKET DATA PEHLE GENERATE HO
+    */
+
+    setTimeout(() => {
+
+      const ticket =
+        document.getElementById(
+          "ticketScreen"
+        );
+
+
+      if(
+        ticket &&
+        ticket.style.display === "block"
+      ){
+
+        addBookingToHistory();
+
+      }
+
+    },350);
+
+  };
+
+
+/* =================================
+   HOME NAV → MY TICKETS
+================================= */
+
+function openMyTicketsFromNav(){
+
+  openTickets();
+
+}
+
+
+/* =================================
+   BACK BUTTON SAFETY
+================================= */
+
+function closeAnyTicketScreen(){
+
+  const tickets =
+    document.getElementById(
+      "ticketsScreen"
+    );
+
+  const ticket =
+    document.getElementById(
+      "ticketScreen"
+    );
+
+
+  if(
+    tickets &&
+    tickets.style.display === "block"
+  ){
+
+    closeTickets();
+
+    return;
+
+  }
+
+
+  if(
+    ticket &&
+    ticket.style.display === "block"
+  ){
+
+    if(
+      typeof closeTicket ===
+      "function"
+    ){
+
+      closeTicket();
+
+    }
+
+  }
+
+}
+
+
+/* =================================
+   SHOW SUCCESS AFTER BOOKING
+================================= */
+
+function ticketAddedNotification(){
+
+  if(
+    typeof showToast ===
+    "function"
+  ){
+
+    showToast(
+      "Ticket added to My Tickets ✓"
+    );
+
+  }
+
+}
+
+</script>
+
+
+<!-- =========================
+     FINAL HTML CLOSING
+========================= -->
 
 </body>
-              </html>
+</html>
