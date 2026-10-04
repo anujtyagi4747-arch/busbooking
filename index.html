@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RouteX - Bus Booking</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,Arial,sans-serif;
+}
+
+:root{
+    --primary:#0b6b52;
+    --primary-dark:#064b3a;
+    --accent:#f4b942;
+    --bg:#f5f7f6;
+    --card:#ffffff;
+    --text:#14201c;
+    --muted:#71807a;
+    --border:#e4ebe7;
+}
+
+body{
+    background:#e9eeeb;
+    color:var(--text);
+}
+
+button,
+input,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+    border:0;
+}
+
+.app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    margin:auto;
+    background:var(--bg);
+    position:relative;
+    overflow:hidden;
+}
+
+/* TOP HEADER */
+
+.topbar{
+    padding:22px 20px 18px;
+    background:linear-gradient(135deg,#07523f,#0b765b);
+    color:white;
+    border-radius:0 0 28px 28px;
+}
+
+.top-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.logo{
+    width:43px;
+    height:43px;
+    border-radius:14px;
+    background:rgba(255,255,255,.14);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:23px;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);
+}
+
+.brand h1{
+    font-size:20px;
+    letter-spacing:-.5px;
+}
+
+.brand small{
+    display:block;
+    opacity:.68;
+    font-size:10px;
+    margin-top:2px;
+}
+
+.profile-btn{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:white;
+    color:var(--primary);
+    font-weight:800;
+}
+
+.welcome{
+    margin-top:22px;
+}
+
+.welcome span{
+    font-size:12px;
+    opacity:.7;
+}
+
+.welcome h2{
+    font-size:26px;
+    margin-top:5px;
+    letter-spacing:-.8px;
+}
+
+/* HERO */
+
+.hero{
+    margin:-2px 16px 0;
+    position:relative;
+    z-index:5;
+    background:white;
+    border-radius:22px;
+    padding:18px;
+    box-shadow:0 12px 35px rgba(20,50,40,.10);
+}
+
+.hero-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.hero-title h3{
+    font-size:17px;
+}
+
+.hero-title span{
+    font-size:11px;
+    color:var(--primary);
+    font-weight:700;
+}
+
+/* ROUTE BOX */
+
+.route-box{
+    border:1px solid var(--border);
+    border-radius:17px;
+    overflow:hidden;
+    background:#fbfcfb;
+}
+
+.location{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 14px;
+}
+
+.location + .location{
+    border-top:1px solid var(--border);
+}
+
+.location-icon{
+    width:36px;
+    height:36px;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#e8f4ef;
+    color:var(--primary);
+    font-size:17px;
+}
+
+.location-content{
+    flex:1;
+}
+
+.location-content label{
+    display:block;
+    color:#89958f;
+    font-size:10px;
+    margin-bottom:3px;
+}
+
+.location-content input{
+    width:100%;
+    border:0;
+    outline:0;
+    background:transparent;
+    font-size:14px;
+    color:var(--text);
+    font-weight:700;
+}
+
+.swap{
+    position:absolute;
+    right:31px;
+    margin-top:-18px;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:white;
+    border:1px solid var(--border);
+    color:var(--primary);
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+    z-index:2;
+}
+
+/* DATE */
+
+.date-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:10px;
+}
+
+.date-card{
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:11px 13px;
+    background:#fbfcfb;
+}
+
+.date-card label{
+    display:block;
+    font-size:10px;
+    color:#89958f;
+    margin-bottom:4px;
+}
+
+.date-card input{
+    width:100%;
+    border:0;
+    outline:0;
+    background:transparent;
+    font-size:13px;
+    font-weight:700;
+    color:var(--text);
+}
+
+/* SEARCH */
+
+.search-btn{
+    width:100%;
+    margin-top:13px;
+    height:50px;
+    border-radius:15px;
+    background:var(--primary);
+    color:white;
+    font-weight:800;
+    font-size:14px;
+    box-shadow:0 8px 18px rgba(11,107,82,.22);
+    transition:.2s;
+}
+
+.search-btn:active{
+    transform:scale(.98);
+}
+
+/* QUICK ACTIONS */
+
+.section{
+    padding:22px 18px 0;
+}
+
+.section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:13px;
+}
+
+.section-head h3{
+    font-size:16px;
+}
+
+.section-head span{
+    font-size:11px;
+    color:var(--primary);
+    font-weight:700;
+}
+
+.quick-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:9px;
+}
+
+.quick{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:13px 5px;
+    text-align:center;
+    transition:.2s;
+}
+
+.quick:active{
+    transform:translateY(2px);
+}
+
+.quick-icon{
+    width:35px;
+    height:35px;
+    border-radius:11px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#edf7f3;
+    color:var(--primary);
+    font-size:16px;
+}
+
+.quick p{
+    margin-top:7px;
+    font-size:10px;
+    font-weight:700;
+}
+
+/* OFFER CARD */
+
+.offer{
+    margin:20px 18px 100px;
+    min-height:145px;
+    border-radius:21px;
+    overflow:hidden;
+    position:relative;
+    background:linear-gradient(135deg,#173b32,#0a765a);
+    color:white;
+    padding:20px;
+}
+
+.offer:after{
+    content:"";
+    position:absolute;
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    right:-45px;
+    top:-35px;
+    border:25px solid rgba(255,255,255,.08);
+}
+
+.offer small{
+    opacity:.65;
+    font-size:10px;
+}
+
+.offer h3{
+    margin-top:8px;
+    font-size:20px;
+    max-width:230px;
+    line-height:1.2;
+}
+
+.offer p{
+    margin-top:8px;
+    font-size:10px;
+    opacity:.7;
+}
+
+.offer button{
+    margin-top:12px;
+    background:var(--accent);
+    color:#31230b;
+    padding:8px 13px;
+    border-radius:9px;
+    font-size:10px;
+    font-weight:800;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:480px;
+    height:72px;
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(15px);
+    border-top:1px solid var(--border);
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    z-index:50;
+}
+
+.nav-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    color:#89958f;
+    font-size:10px;
+    font-weight:700;
+    background:transparent;
+}
+
+.nav-item span:first-child{
+    font-size:19px;
+}
+
+.nav-item.active{
+    color:var(--primary);
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:88px;
+    transform:translate(-50%,20px);
+    width:calc(100% - 40px);
+    max-width:420px;
+    padding:13px 16px;
+    border-radius:13px;
+    background:#18231f;
+    color:white;
+    font-size:12px;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    z-index:100;
+    text-align:center;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* RESPONSIVE */
+
+@media(min-width:600px){
+    body{
+        padding:25px 0;
+    }
+
+    .app{
+        min-height:900px;
+        border-radius:30px;
+        box-shadow:0 25px 70px rgba(0,0,0,.12);
+    }
+
+    .bottom-nav{
+        position:absolute;
+        bottom:0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- TOP HEADER -->
+    <header class="topbar">
+
+        <div class="top-row">
+
+            <div class="brand">
+
+                <div class="logo">🚌</div>
+
+                <div>
+                    <h1>RouteX</h1>
+                    <small>SMART BUS BOOKING</small>
+                </div>
+
+            </div>
+
+            <button class="profile-btn" onclick="showToast('Profile section coming next')">
+                A
+            </button>
+
+        </div>
+
+        <div class="welcome">
+            <span>Good morning 👋</span>
+            <h2>Where are you going?</h2>
+        </div>
+
+    </header>
+
+
+    <!-- BOOKING SEARCH CARD -->
+    <section class="hero">
+
+        <div class="hero-title">
+            <h3>Find your bus</h3>
+            <span>FAST BOOKING</span>
+        </div>
+
+        <div class="route-box">
+
+            <div class="location">
+
+                <div class="location-icon">●</div>
+
+                <div class="location-content">
+                    <label>FROM</label>
+                    <input id="fromCity" type="text" placeholder="Enter departure city">
+                </div>
+
+            </div>
+
+            <button class="swap" onclick="swapLocations()">↕</button>
+
+            <div class="location">
+
+                <div class="location-icon">⌖</div>
+
+                <div class="location-content">
+                    <label>TO</label>
+                    <input id="toCity" type="text" placeholder="Enter destination city">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="date-row">
+
+            <div class="date-card">
+                <label>JOURNEY DATE</label>
+                <input id="journeyDate" type="date">
+            </div>
+
+            <div class="date-card">
+                <label>PASSENGERS</label>
+                <input id="passengers" type="number" min="1" value="1">
+            </div>
+
+        </div>
+
+
+        <button class="search-btn" onclick="searchBuses()">
+            Search Available Buses →
+        </button>
+
+    </section>
+
+
+    <!-- QUICK ACTIONS -->
+    <section class="section">
+
+        <div class="section-head">
+            <h3>Quick access</h3>
+            <span>VIEW ALL</span>
+        </div>
+
+        <div class="quick-grid">
+
+            <button class="quick" onclick="showToast('My bookings will open here')">
+                <div class="quick-icon">🎫</div>
+                <p>My Tickets</p>
+            </button>
+
+            <button class="quick" onclick="showToast('Customer history will open here')">
+                <div class="quick-icon">👤</div>
+                <p>Customers</p>
+            </button>
+
+            <button class="quick" onclick="showToast('Payment history will open here')">
+                <div class="quick-icon">₹</div>
+                <p>Payments</p>
+            </button>
+
+            <button class="quick" onclick="showToast('Help center will open here')">
+                <div class="quick-icon">?</div>
+                <p>Support</p>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- OFFER -->
+    <div class="offer">
+
+        <small>TRAVEL SMART</small>
+
+        <h3>Easy booking.<br>Easy ticket management.</h3>
+
+        <p>Manage your complete bus journey from one place.</p>
+
+        <button onclick="showToast('Offers section opened')">
+            Explore Now
+        </button>
+
+    </div>
+
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+
+        <button class="nav-item active" onclick="activateNav(this)">
+            <span>⌂</span>
+            <small>Home</small>
+        </button>
+
+        <button class="nav-item" onclick="activateNav(this)">
+            <span>🎫</span>
+            <small>Bookings</small>
+        </button>
+
+        <button class="nav-item" onclick="activateNav(this)">
+            <span>◷</span>
+            <small>History</small>
+        </button>
+
+        <button class="nav-item" onclick="activateNav(this)">
+            <span>👤</span>
+            <small>Profile</small>
+        </button>
+
+    </nav>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+/* SET TODAY */
+
+const today = new Date();
+
+const yyyy = today.getFullYear();
+
+const mm = String(today.getMonth()+1).padStart(2,'0');
+
+const dd = String(today.getDate()).padStart(2,'0');
+
+document.getElementById("journeyDate").value =
+    `${yyyy}-${mm}-${dd}`;
+
+
+/* SWAP LOCATIONS */
+
+function swapLocations(){
+
+    const from = document.getElementById("fromCity");
+
+    const to = document.getElementById("toCity");
+
+    const temp = from.value;
+
+    from.value = to.value;
+
+    to.value = temp;
+
+}
+
+
+/* SEARCH BUSES */
+
+function searchBuses(){
+
+    const from =
+        document.getElementById("fromCity").value.trim();
+
+    const to =
+        document.getElementById("toCity").value.trim();
+
+    const date =
+        document.getElementById("journeyDate").value;
+
+    const passengers =
+        document.getElementById("passengers").value;
+
+    if(!from || !to){
+
+        showToast("Please enter From and To locations");
+
+        return;
+    }
+
+    if(!date){
+
+        showToast("Please select journey date");
+
+        return;
+    }
+
+    showToast(
+        `${passengers} passenger booking search: ${from} → ${to}`
+    );
+
+}
+
+
+/* NAVIGATION */
+
+function activateNav(element){
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(item => item.classList.remove("active"));
+
+    element.classList.add("active");
+
+    showToast(element.innerText.trim()+" section selected");
+
+}
+
+
+/* TOAST */
+
+let toastTimer;
+
+function showToast(message){
+
+    const toast = document.getElementById("toast");
+
+    toast.innerText = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    },2500);
+
+}
+
+</script>
+
+</body>
+              </html>
