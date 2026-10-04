@@ -2328,5 +2328,455 @@ function continueBooking(){
 }
 
 </script>
+    <style>
+/* ================================
+   PASSENGER DETAILS SCREEN
+================================ */
+
+.passenger-screen{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:#f6f8f5;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.passenger-header{
+  background:linear-gradient(135deg,#0d6b45,#15915d);
+  color:#fff;
+  padding:17px 16px 20px;
+  border-radius:0 0 24px 24px;
+}
+
+.passenger-head-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.passenger-back{
+  width:42px;
+  height:42px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  border-radius:14px;
+  font-size:21px;
+}
+
+.passenger-head-text{
+  flex:1;
+}
+
+.passenger-head-text strong{
+  display:block;
+  font-size:17px;
+}
+
+.passenger-head-text span{
+  display:block;
+  margin-top:3px;
+  font-size:11px;
+  opacity:.8;
+}
+
+.passenger-content{
+  flex:1;
+  overflow-y:auto;
+  padding:18px 16px 115px;
+}
+
+.booking-summary{
+  background:#fff;
+  border:1px solid #e4ebe6;
+  border-radius:19px;
+  padding:15px;
+  margin-bottom:16px;
+  box-shadow:0 8px 25px rgba(20,70,45,.05);
+}
+
+.summary-route{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.summary-city{
+  flex:1;
+}
+
+.summary-city small{
+  display:block;
+  color:#85918a;
+  font-size:10px;
+  margin-bottom:4px;
+}
+
+.summary-city strong{
+  display:block;
+  font-size:14px;
+  color:#18241e;
+}
+
+.summary-arrow{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:#edf7f1;
+  color:#15915d;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:800;
+}
+
+.summary-bottom{
+  border-top:1px solid #edf0ed;
+  margin-top:13px;
+  padding-top:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.summary-item{
+  font-size:11px;
+  color:#69766f;
+}
+
+.summary-item b{
+  display:block;
+  color:#26352d;
+  margin-top:3px;
+  font-size:12px;
+}
+
+.passenger-card{
+  background:#fff;
+  border:1px solid #e4ebe6;
+  border-radius:19px;
+  padding:17px;
+  margin-bottom:16px;
+}
+
+.section-title{
+  font-size:16px;
+  font-weight:800;
+  color:#17231d;
+  margin-bottom:14px;
+}
+
+.input-group{
+  margin-bottom:13px;
+}
+
+.input-group label{
+  display:block;
+  font-size:11px;
+  color:#65736b;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.passenger-input{
+  width:100%;
+  height:48px;
+  border:1px solid #dfe7e1;
+  border-radius:13px;
+  background:#fafcfa;
+  padding:0 13px;
+  outline:none;
+  font-size:13px;
+  color:#17231d;
+  box-sizing:border-box;
+}
+
+.passenger-input:focus{
+  border-color:#15915d;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(21,145,93,.08);
+}
+
+.input-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.payment-option{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  border:1px solid #dfe7e1;
+  padding:13px;
+  border-radius:14px;
+  margin-bottom:9px;
+  cursor:pointer;
+  background:#fff;
+}
+
+.payment-option.active{
+  border-color:#15915d;
+  background:#f1faf5;
+}
+
+.payment-radio{
+  width:18px;
+  height:18px;
+  border:2px solid #b9c5bd;
+  border-radius:50%;
+  position:relative;
+  flex-shrink:0;
+}
+
+.payment-option.active .payment-radio{
+  border-color:#15915d;
+}
+
+.payment-option.active .payment-radio:after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border-radius:50%;
+  background:#15915d;
+}
+
+.payment-icon{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  background:#edf6f1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:16px;
+}
+
+.payment-text{
+  flex:1;
+}
+
+.payment-text strong{
+  display:block;
+  font-size:13px;
+  color:#25332b;
+}
+
+.payment-text span{
+  display:block;
+  font-size:10px;
+  color:#7c8881;
+  margin-top:2px;
+}
+</style>
+
+
+<!-- =================================
+     PASSENGER SCREEN
+================================= -->
+
+<div class="passenger-screen" id="passengerScreen">
+
+  <div class="passenger-header">
+
+    <div class="passenger-head-row">
+
+      <button
+        class="passenger-back"
+        onclick="closePassenger()">
+        ←
+      </button>
+
+      <div class="passenger-head-text">
+        <strong>Passenger Details</strong>
+        <span>Complete your booking</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="passenger-content">
+
+    <!-- BOOKING SUMMARY -->
+
+    <div class="booking-summary">
+
+      <div class="summary-route">
+
+        <div class="summary-city">
+          <small>FROM</small>
+          <strong id="bookingFrom">Delhi</strong>
+        </div>
+
+        <div class="summary-arrow">
+          →
+        </div>
+
+        <div class="summary-city">
+          <small>TO</small>
+          <strong id="bookingTo">Jaipur</strong>
+        </div>
+
+      </div>
+
+
+      <div class="summary-bottom">
+
+        <div class="summary-item">
+          Bus
+          <b id="bookingBus">Royal Express</b>
+        </div>
+
+        <div class="summary-item">
+          Seats
+          <b id="bookingSeats">A1</b>
+        </div>
+
+        <div class="summary-item">
+          Date
+          <b id="bookingDate">Today</b>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PASSENGER INFORMATION -->
+
+    <div class="passenger-card">
+
+      <div class="section-title">
+        Passenger Information
+      </div>
+
+
+      <div class="input-group">
+
+        <label>Full Name</label>
+
+        <input
+          class="passenger-input"
+          id="passengerName"
+          type="text"
+          placeholder="Enter passenger name">
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>Mobile Number</label>
+
+        <input
+          class="passenger-input"
+          id="passengerMobile"
+          type="tel"
+          maxlength="10"
+          placeholder="Enter 10 digit mobile number">
+
+      </div>
+
+
+      <div class="input-row">
+
+        <div class="input-group">
+
+          <label>Passengers</label>
+
+          <input
+            class="passenger-input"
+            id="passengerCount"
+            type="number"
+            min="1"
+            value="1">
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label>Ticket Type</label>
+
+          <input
+            class="passenger-input"
+            value="Bus Ticket"
+            readonly>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PAYMENT METHOD -->
+
+    <div class="passenger-card">
+
+      <div class="section-title">
+        Payment Method
+      </div>
+
+
+      <div
+        class="payment-option active"
+        onclick="selectPayment(this,'UPI')">
+
+        <div class="payment-radio"></div>
+
+        <div class="payment-icon">
+          ₹
+        </div>
+
+        <div class="payment-text">
+          <strong>UPI / Online Payment</strong>
+          <span>Pay securely using UPI</span>
+        </div>
+
+      </div>
+
+
+      <div
+        class="payment-option"
+        onclick="selectPayment(this,'Cash')">
+
+        <div class="payment-radio"></div>
+
+        <div class="payment-icon">
+          💵
+        </div>
+
+        <div class="payment-text">
+          <strong>Cash Payment</strong>
+          <span>Pay at counter / bus office</span>
+        </div>
+
+      </div>
+
+
+      <div
+        class="payment-option"
+        onclick="selectPayment(this,'Pending')">
+
+        <div class="payment-radio"></div>
+
+        <div class="payment-icon">
+          🕐
+        </div>
+
+        <div class="payment-text">
+          <strong>Payment Pending</strong>
+          <span>Mark payment for later</span>
+        </div>
+
+      </div>
+
+    </div>
 </body>
               </html>
